@@ -92,6 +92,15 @@
 #include "conf_example.h"
 #include "conf_uart_serial.h"
 
+ typedef struct {
+	 const uint8_t *data;
+	 uint16_t width;
+	 uint16_t height;
+	 uint8_t dataSize;
+ } tImage;
+
+#include "icones/icone1.h"
+
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
 
@@ -101,8 +110,30 @@ struct ili9488_opt_t g_ili9488_display_opt;
 const uint32_t BUTTON_W = 120;
 const uint32_t BUTTON_H = 150;
 const uint32_t BUTTON_BORDER = 2;
-const uint32_t BUTTON_X = ILI9488_LCD_WIDTH/2;
-const uint32_t BUTTON_Y = ILI9488_LCD_HEIGHT/2;
+const uint32_t BUTTON_X = ILI9488_LCD_WIDTH/4;
+const uint32_t BUTTON_Y = ILI9488_LCD_HEIGHT/4;
+	
+/** \brief Touch event struct */
+struct botao {
+	uint16_t x;
+	uint16_t y;
+	uint16_t size;
+	tImage *image;
+	void (*p_handler)(void);
+};	
+
+void lavagem_callback(void){
+	
+}
+
+void secagem_callback(void){
+	
+}
+
+int processa_touch(struct botao b[], struct botao *rtn, uint N ,uint x, uint y ){
+	
+}
+
 	
 static void configure_lcd(void){
 	/* Initialize display parameter */
@@ -251,7 +282,7 @@ void update_screen(uint32_t tx, uint32_t ty) {
 	}
 }
 
-void mxt_handler(struct mxt_device *device)
+void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
 {
 	/* USART tx buffer initialized to 0 */
 	char tx_buf[STRING_LENGTH * MAX_ENTRIES] = {0};
@@ -276,10 +307,14 @@ void mxt_handler(struct mxt_device *device)
 		uint32_t conv_y = convert_axis_system_y(touch_event.x);
 		
 		/* Format a new entry in the data string that will be sent over USART */
-		sprintf(buf, "Nr: %1d, X:%4d, Y:%4d, Status:0x%2x conv X:%3d Y:%3d\n\r",
-				touch_event.id, touch_event.x, touch_event.y,
-				touch_event.status, conv_x, conv_y);
-		update_screen(conv_x, conv_y);
+		sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
+		
+		/* -----------------------------------------------------*/
+		struct botao bAtual;
+		if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y))
+			bAtual.p_handler();
+		//update_screen(conv_x, conv_y);
+		/* -----------------------------------------------------*/
 
 		/* Add the new string to the string buffer */
 		strcat(tx_buf, buf);
@@ -294,6 +329,7 @@ void mxt_handler(struct mxt_device *device)
 		usart_serial_write_packet(USART_SERIAL_EXAMPLE, (uint8_t *)tx_buf, strlen(tx_buf));
 	}
 }
+
 
 int main(void)
 {
@@ -311,7 +347,7 @@ int main(void)
 	board_init();  /* Initialize board */
 	configure_lcd();
 	draw_screen();
-	draw_button(0);
+	//draw_button(0);
 	/* Initialize the mXT touch device */
 	mxt_init(&device);
 	
@@ -320,12 +356,41 @@ int main(void)
 
 	printf("\n\rmaXTouch data USART transmitter\n\r");
 		
+	/* -----------------------------------------------------*/
+	struct botao botaoLavagem;
+	botaoLavagem.x = 50;
+	botaoLavagem.y = 60;
+	botaoLavagem.size = 100;
+	botaoLavagem.p_handler = lavagem_callback;
+	botaoLavagem.image = &icone1;
+
+	struct botao botaoSecagem;
+	botaoSecagem.x = 150;
+	botaoSecagem.y = 60;
+	botaoSecagem.size = 100;
+	botaoSecagem.p_handler = secagem_callback;
+	botaoSecagem.image = &icone1;
+
+
+	ili9488_draw_pixmap(botaoSecagem.x, 
+						botaoSecagem.y, 
+						botaoSecagem.image->width, 
+						botaoSecagem.image->height, 
+						botaoSecagem.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(botaoSecagem.x + botaoSecagem.image->width + 10,
+						botaoSecagem.y + botaoSecagem.image->height/2, 
+						"Local" );
+	
+	struct botao botoes[] = {&botaoLavagem, &botaoSecagem};
+	/* -----------------------------------------------------*/
 
 	while (true) {
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
-			mxt_handler(&device);
+			mxt_handler(&device, botoes, 2);
 		}
 		
 	}
