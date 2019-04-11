@@ -100,6 +100,10 @@
  } tImage;
 
 #include "icones/icone1.h"
+#include "icones/advance.h"
+#include "icones/back.h"
+
+
 
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
@@ -370,7 +374,20 @@ int main(void)
 	botaoSecagem.size = 100;
 	botaoSecagem.p_handler = secagem_callback;
 	botaoSecagem.image = &icone1;
+	
+	struct botao botaoAdvance;
+	botaoAdvance.x = 25;
+	botaoAdvance.y = 220;
+	botaoAdvance.size = 64;
+	botaoAdvance.p_handler = secagem_callback;
+	botaoAdvance.image = &advance;
 
+	struct botao botaoBack;
+	botaoBack.x = ILI9488_LCD_WIDTH-89;
+	botaoBack.y = 220;
+	botaoBack.size = 64;
+	botaoBack.p_handler = secagem_callback;
+	botaoBack.image = &back;
 
 	ili9488_draw_pixmap(botaoSecagem.x, 
 						botaoSecagem.y, 
@@ -378,19 +395,32 @@ int main(void)
 						botaoSecagem.image->height, 
 						botaoSecagem.image->data);
 	
+	ili9488_draw_pixmap(botaoAdvance.x,
+						botaoAdvance.y,
+						botaoAdvance.image->width,
+						botaoAdvance.image->height,
+						botaoAdvance.image->data);
+						
+	ili9488_draw_pixmap(botaoBack.x,
+						botaoBack.y,
+						botaoBack.image->width,
+						botaoBack.image->height,
+						botaoBack.image->data);
+						
 	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	
 	ili9488_draw_string(botaoSecagem.x + botaoSecagem.image->width + 10,
 						botaoSecagem.y + botaoSecagem.image->height/2, 
-						"Local" );
+						"Bom dia" );
 	
-	struct botao botoes[] = {&botaoLavagem, &botaoSecagem};
+	struct botao botoes[] = {&botaoSecagem, &botaoLavagem, &botaoAdvance, &botaoBack};
 	/* -----------------------------------------------------*/
 
 	while (true) {
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
-			mxt_handler(&device, botoes, 2);
+			mxt_handler(&device, botoes, 4);
 		}
 		
 	}
