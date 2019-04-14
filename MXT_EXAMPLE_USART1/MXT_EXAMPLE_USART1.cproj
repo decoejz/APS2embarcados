@@ -1338,7 +1338,13 @@
     <None Include="src\config\conf_ili9488.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\icones\icone1.h">
+    <Compile Include="src\icones\diario.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\icones\left_arrow.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\icones\right_arrow.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\main.c">

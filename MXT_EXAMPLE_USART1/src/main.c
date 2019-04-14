@@ -99,11 +99,9 @@
 	 uint8_t dataSize;
  } tImage;
 
-#include "icones/icone1.h"
-#include "icones/advance.h"
-#include "icones/back.h"
-
-
+#include "icones/diario.h"
+#include "icones/right_arrow.h"
+#include "icones/left_arrow.h"
 
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
@@ -126,13 +124,22 @@ struct botao {
 	void (*p_handler)(void);
 };	
 
-void lavagem_callback(void){
+struct botao botaoLavagemDiaria;
+struct botao botaoDireita;
+struct botao botaoEsquerda;
+
+void diario_callback(void){
 	
 }
 
-void secagem_callback(void){
+void slice_right_callback(void){
 	
 }
+
+void slice_left_callback(void){
+	
+}
+
 
 int processa_touch(struct botao b[], struct botao *rtn, uint N ,uint x, uint y ){
 	
@@ -334,6 +341,51 @@ void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
 	}
 }
 
+void build_buttons(){
+	botaoLavagemDiaria.x = 150;
+	botaoLavagemDiaria.y = 50;
+	botaoLavagemDiaria.size = 100;
+	botaoLavagemDiaria.p_handler = diario_callback;
+	botaoLavagemDiaria.image = &diario;
+
+	botaoDireita.x = 400;
+	botaoDireita.y = 90;
+	botaoDireita.size = 100;
+	botaoDireita.p_handler = slice_right_callback;
+	botaoDireita.image = &right_arrow;
+	
+	botaoEsquerda.x = 20;
+	botaoEsquerda.y = 90;
+	botaoEsquerda.size = 100;
+	botaoEsquerda.p_handler = slice_left_callback;
+	botaoEsquerda.image = &left_arrow;
+}
+
+void draw_diary_page(){
+	ili9488_draw_pixmap(botaoLavagemDiaria.x,
+	botaoLavagemDiaria.y,
+	botaoLavagemDiaria.image->width,
+	botaoLavagemDiaria.image->height,
+	botaoLavagemDiaria.image->data);
+	
+	ili9488_draw_pixmap(botaoDireita.x,
+	botaoDireita.y,
+	botaoDireita.image->width,
+	botaoDireita.image->height,
+	botaoDireita.image->data);
+	
+	ili9488_draw_pixmap(botaoEsquerda.x,
+	botaoEsquerda.y,
+	botaoEsquerda.image->width,
+	botaoEsquerda.image->height,
+	botaoEsquerda.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(botaoLavagemDiaria.x + 5,
+						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
+						"Lavagem diaria" );
+}
+
 
 int main(void)
 {
@@ -359,62 +411,11 @@ int main(void)
 	stdio_serial_init(USART_SERIAL_EXAMPLE, &usart_serial_options);
 
 	printf("\n\rmaXTouch data USART transmitter\n\r");
-		
-	/* -----------------------------------------------------*/
-	struct botao botaoLavagem;
-	botaoLavagem.x = 50;
-	botaoLavagem.y = 60;
-	botaoLavagem.size = 100;
-	botaoLavagem.p_handler = lavagem_callback;
-	botaoLavagem.image = &icone1;
-
-	struct botao botaoSecagem;
-	botaoSecagem.x = 150;
-	botaoSecagem.y = 60;
-	botaoSecagem.size = 100;
-	botaoSecagem.p_handler = secagem_callback;
-	botaoSecagem.image = &icone1;
 	
-	struct botao botaoAdvance;
-	botaoAdvance.x = 25;
-	botaoAdvance.y = 220;
-	botaoAdvance.size = 64;
-	botaoAdvance.p_handler = secagem_callback;
-	botaoAdvance.image = &advance;
-
-	struct botao botaoBack;
-	botaoBack.x = ILI9488_LCD_WIDTH-89;
-	botaoBack.y = 220;
-	botaoBack.size = 64;
-	botaoBack.p_handler = secagem_callback;
-	botaoBack.image = &back;
-
-	ili9488_draw_pixmap(botaoSecagem.x, 
-						botaoSecagem.y, 
-						botaoSecagem.image->width, 
-						botaoSecagem.image->height, 
-						botaoSecagem.image->data);
+	build_buttons();
+	draw_diary_page();
 	
-	ili9488_draw_pixmap(botaoAdvance.x,
-						botaoAdvance.y,
-						botaoAdvance.image->width,
-						botaoAdvance.image->height,
-						botaoAdvance.image->data);
-						
-	ili9488_draw_pixmap(botaoBack.x,
-						botaoBack.y,
-						botaoBack.image->width,
-						botaoBack.image->height,
-						botaoBack.image->data);
-						
-	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
-	
-	ili9488_draw_string(botaoSecagem.x + botaoSecagem.image->width + 10,
-						botaoSecagem.y + botaoSecagem.image->height/2, 
-						"Bom dia" );
-	
-	struct botao botoes[] = {&botaoSecagem, &botaoLavagem, &botaoAdvance, &botaoBack};
-	/* -----------------------------------------------------*/
+	struct botao botoes[] = {&botaoLavagemDiaria, &botaoDireita, &botaoEsquerda};
 
 	while (true) {
 		/* Check for any pending messages and run message handler if any

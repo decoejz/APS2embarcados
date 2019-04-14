@@ -182,7 +182,8 @@ src/main.d src/main.o: ../src/main.c ../src/asf.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\xlocale.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-none-eabi\include\sys\string.h \
  ../src/config/conf_board.h ../src/config/conf_example.h \
- ../src/icones/icone1.h ../src/icones/advance.h ../src/icones/back.h
+ ../src/icones/diario.h ../src/icones/right_arrow.h \
+ ../src/icones/left_arrow.h
 
 ../src/asf.h:
 
@@ -570,8 +571,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../src/config/conf_example.h:
 
-../src/icones/icone1.h:
+../src/icones/diario.h:
 
-../src/icones/advance.h:
+../src/icones/right_arrow.h:
 
-../src/icones/back.h:
+../src/icones/left_arrow.h:
