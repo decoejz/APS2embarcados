@@ -1344,7 +1344,13 @@
     <Compile Include="src\icones\left_arrow.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\icones\lock.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\icones\right_arrow.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\icones\unlock.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\main.c">

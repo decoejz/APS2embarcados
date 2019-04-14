@@ -102,6 +102,8 @@
 #include "icones/diario.h"
 #include "icones/right_arrow.h"
 #include "icones/left_arrow.h"
+#include "icones/unlock.h"
+#include "icones/lock.h"
 
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
@@ -127,6 +129,8 @@ struct botao {
 struct botao botaoLavagemDiaria;
 struct botao botaoDireita;
 struct botao botaoEsquerda;
+struct botao botaoLock;
+struct botao botaoUnlock;
 
 void diario_callback(void){
 	
@@ -137,6 +141,14 @@ void slice_right_callback(void){
 }
 
 void slice_left_callback(void){
+	
+}
+
+void unlock_callback(void){
+	
+}
+
+void lock_callback(void){
 	
 }
 
@@ -359,6 +371,18 @@ void build_buttons(){
 	botaoEsquerda.size = 100;
 	botaoEsquerda.p_handler = slice_left_callback;
 	botaoEsquerda.image = &left_arrow;
+
+	botaoUnlock.x = 400;
+	botaoUnlock.y = 240;
+	botaoUnlock.size = 100;
+	botaoUnlock.p_handler = unlock_callback;
+	botaoUnlock.image = &unlock;
+	
+	botaoLock.x = 400;
+	botaoLock.y = 240;
+	botaoLock.size = 100;
+	botaoLock.p_handler = lock_callback;
+	botaoLock.image = &lock;
 }
 
 void draw_diary_page(){
@@ -384,6 +408,8 @@ void draw_diary_page(){
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
 						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
 						"Lavagem diaria" );
+						
+	//ili9488_draw_filled_rectangle(480,320,0,0);
 }
 
 
@@ -415,15 +441,14 @@ int main(void)
 	build_buttons();
 	draw_diary_page();
 	
-	struct botao botoes[] = {&botaoLavagemDiaria, &botaoDireita, &botaoEsquerda};
-
+	struct botao botoes[] = {&botaoLavagemDiaria, &botaoDireita, &botaoEsquerda, &botaoUnlock, &botaoLock};
+			
 	while (true) {
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
 			mxt_handler(&device, botoes, 4);
-		}
-		
+		}	
 	}
 
 	return 0;
