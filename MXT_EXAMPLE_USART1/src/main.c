@@ -104,6 +104,8 @@
 #include "icones/left_arrow.h"
 #include "icones/unlock.h"
 #include "icones/lock.h"
+#include "icones/pesado.h"
+#include "icones/rapido.h"
 
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
@@ -123,18 +125,33 @@ struct botao {
 };	
 
 struct botao botaoLavagemDiaria;
+struct botao botaoLavagemPesada;
+struct botao botaoLavagemRapida;
 struct botao botaoDireita;
 struct botao botaoEsquerda;
 struct botao botaoLock;
 struct botao botaoUnlock;
 
 void draw_screen(void);
+void draw_heavy_page();
+void draw_fast_page();
+void draw_diary_page();
 
 volatile int n_botoes_na_tela;
 
 volatile bool unlocked_flag = false;
 
 void diario_callback(void){
+	draw_screen();
+
+}
+
+void rapido_callback(void){
+	draw_screen();
+
+}
+
+void pesado_callback(void){
 	draw_screen();
 
 }
@@ -379,6 +396,20 @@ void build_buttons(){
 	botaoLavagemDiaria.size_y = 180;
 	botaoLavagemDiaria.p_handler = diario_callback;
 	botaoLavagemDiaria.image = &diario;
+	
+	botaoLavagemPesada.x = 150;
+	botaoLavagemPesada.y = 50;
+	botaoLavagemPesada.size_x = 180;
+	botaoLavagemPesada.size_y = 180;
+	botaoLavagemPesada.p_handler = pesado_callback;
+	botaoLavagemPesada.image = &pesado;
+	
+	botaoLavagemRapida.x = 150;
+	botaoLavagemRapida.y = 50;
+	botaoLavagemRapida.size_x = 180;
+	botaoLavagemRapida.size_y = 180;
+	botaoLavagemRapida.p_handler = rapido_callback;
+	botaoLavagemRapida.image = &rapido;
 
 	botaoDireita.x = 400;
 	botaoDireita.y = 90;
@@ -437,7 +468,57 @@ void draw_diary_page(){
 	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
 						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
-						"Lavagem diaria" );
+						"LAVAGEM DIARIA" );
+}
+
+void draw_fast_page(){
+	ili9488_draw_pixmap(botaoLavagemRapida.x,
+	botaoLavagemRapida.y,
+	botaoLavagemRapida.image->width,
+	botaoLavagemRapida.image->height,
+	botaoLavagemRapida.image->data);
+	
+	ili9488_draw_pixmap(botaoDireita.x,
+	botaoDireita.y,
+	botaoDireita.image->width,
+	botaoDireita.image->height,
+	botaoDireita.image->data);
+	
+	ili9488_draw_pixmap(botaoEsquerda.x,
+	botaoEsquerda.y,
+	botaoEsquerda.image->width,
+	botaoEsquerda.image->height,
+	botaoEsquerda.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(botaoLavagemRapida.x + 5,
+						botaoLavagemRapida.y + botaoLavagemRapida.image->height + 10,
+						"LAVAGEM RAPIDA" );
+}
+
+void draw_heavy_page(){
+	ili9488_draw_pixmap(botaoLavagemPesada.x,
+	botaoLavagemPesada.y,
+	botaoLavagemPesada.image->width,
+	botaoLavagemPesada.image->height,
+	botaoLavagemPesada.image->data);
+	
+	ili9488_draw_pixmap(botaoDireita.x,
+	botaoDireita.y,
+	botaoDireita.image->width,
+	botaoDireita.image->height,
+	botaoDireita.image->data);
+	
+	ili9488_draw_pixmap(botaoEsquerda.x,
+	botaoEsquerda.y,
+	botaoEsquerda.image->width,
+	botaoEsquerda.image->height,
+	botaoEsquerda.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(botaoLavagemPesada.x + 5,
+						botaoLavagemPesada.y + botaoLavagemPesada.image->height + 10,
+						"LAVAGEM PESADA" );
 }
 
 
