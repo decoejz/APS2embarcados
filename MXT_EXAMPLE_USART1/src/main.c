@@ -138,8 +138,11 @@ void draw_fast_page();
 void draw_diary_page();
 
 volatile int n_botoes_na_tela;
+volatile int initial_screen = 0;
 
-volatile bool unlocked_flag = false;
+struct botao botoes[10];
+
+volatile bool unlocked_flag = true;
 
 void diario_callback(void){
 	draw_screen();
@@ -157,13 +160,78 @@ void pesado_callback(void){
 }
 
 void slice_right_callback(void){
-	draw_screen();
-
+	if (unlocked_flag){
+		draw_screen();
+		
+		if(initial_screen == 0){
+			initial_screen = 1;
+			draw_heavy_page();
+			botoes[0] = botaoLavagemPesada;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+		}
+		else if(initial_screen == 1){
+			initial_screen = 2;
+			draw_fast_page();
+			botoes[0] = botaoLavagemRapida;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+			
+		}
+		else if(initial_screen == 2){
+			initial_screen = 0;
+			draw_diary_page();
+			botoes[0] = botaoLavagemDiaria;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+		}	
+	}
 }
 
 void slice_left_callback(void){
-	draw_screen();
-
+	if (unlocked_flag){
+		draw_screen();
+		
+		if(initial_screen == 0){
+			initial_screen = 2;
+			draw_fast_page();
+			botoes[0] = botaoLavagemRapida;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+		}
+		else if(initial_screen == 1){
+			initial_screen = 0;
+			draw_diary_page();
+			botoes[0] = botaoLavagemDiaria;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+		}
+		else if(initial_screen == 2){
+			initial_screen = 1;
+			draw_heavy_page();
+			botoes[0] = botaoLavagemPesada;
+			botoes[1] = botaoDireita;
+			botoes[2] = botaoEsquerda;
+			botoes[3] = botaoUnlock;
+			botoes[4] = botaoLock;
+			n_botoes_na_tela = 5;
+		}
+	}
 }
 
 void unlock_callback(void){
@@ -201,8 +269,6 @@ void lock_callback(void){
 	}				  
 
 }
-
-
 
 int processa_touch(struct botao *b, struct botao *rtn, uint N ,uint x, uint y ){
 	for (int i=0; i<N; i++){
@@ -366,15 +432,16 @@ void mxt_handler(struct mxt_device *device, struct botao *botoes, uint Nbotoes)
 		/* Format a new entry in the data string that will be sent over USART */
 		sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
 		
-		/* -----------------------------------------------------*/
-		struct botao bAtual;
-		if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y)){
-			printf("Entrou no handler geral");
-			bAtual.p_handler();
+		if (touch_event.status == 32){
+			/* -----------------------------------------------------*/
+			struct botao bAtual;
+			if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y)){
+				printf("Entrou no handler geral");
+				bAtual.p_handler();
+			}
+			//update_screen(conv_x, conv_y);
+			/* -----------------------------------------------------*/
 		}
-		//update_screen(conv_x, conv_y);
-		/* -----------------------------------------------------*/
-
 		/* Add the new string to the string buffer */
 		strcat(tx_buf, buf);
 		i++;
@@ -522,9 +589,6 @@ void draw_heavy_page(){
 }
 
 
-	
-
-
 int main(void)
 {
 	struct mxt_device device; /* Device data container */
@@ -553,7 +617,12 @@ int main(void)
 	build_buttons();
 	draw_diary_page();
 				
-	struct botao botoes[10] = {botaoLavagemDiaria, botaoDireita, botaoEsquerda, botaoUnlock, botaoLock};
+	botoes[0] = botaoLavagemDiaria;
+	botoes[1] = botaoDireita;
+	botoes[2] = botaoEsquerda;
+	botoes[3] = botaoUnlock;
+	botoes[4] = botaoLock;
+	
 	n_botoes_na_tela = 5;
 		
 	while (true) {
