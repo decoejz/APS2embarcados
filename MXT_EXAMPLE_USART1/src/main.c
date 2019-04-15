@@ -151,12 +151,16 @@ void slice_left_callback(void){
 
 void unlock_callback(void){
 	if(unlocked_flag == false){
-		draw_screen();		
+		//deixa lugar do botao branco
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+		ili9488_draw_filled_rectangle(botaoLock.x, botaoLock.y, botaoLock.x + botaoLock.image->width, botaoLock.y + botaoLock.image->height);
+		ili9488_draw_filled_rectangle(botaoUnlock.x, botaoUnlock.y, botaoUnlock.x + botaoUnlock.image->width, botaoUnlock.y + botaoUnlock.image->height);
+		
 		ili9488_draw_pixmap(botaoLock.x,
-		botaoLock.y,
-		botaoLock.image->width,
-		botaoLock.image->height,
-		botaoLock.image->data);
+							botaoLock.y,
+							botaoLock.image->width,
+							botaoLock.image->height,
+							botaoLock.image->data);
 		unlocked_flag = true;
 		return;
 	}
@@ -164,14 +168,17 @@ void unlock_callback(void){
 
 void lock_callback(void){
 	if(unlocked_flag == true){
-		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
-		ili9488_draw_filled_rectangle(0, 0, ILI9488_LCD_WIDTH-1, ILI9488_LCD_HEIGHT-1);
 		//deixa lugar do botao branco
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+		ili9488_draw_filled_rectangle(botaoUnlock.x, botaoUnlock.y, botaoUnlock.x + botaoUnlock.image->width, botaoUnlock.y + botaoUnlock.image->height);
+		ili9488_draw_filled_rectangle(botaoLock.x, botaoLock.y, botaoLock.x + botaoLock.image->width, botaoLock.y + botaoLock.image->height);
+
+		
 		ili9488_draw_pixmap(botaoUnlock.x,
-		botaoUnlock.y,
-		botaoUnlock.image->width,
-		botaoUnlock.image->height,
-		botaoUnlock.image->data);
+							botaoUnlock.y,
+							botaoUnlock.image->width,
+							botaoUnlock.image->height,
+							botaoUnlock.image->data);
 		unlocked_flag = false;
 		return;
 	}				  
