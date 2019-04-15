@@ -151,37 +151,31 @@ void slice_left_callback(void){
 
 void unlock_callback(void){
 	if(unlocked_flag == false){
-		draw_screen();
-		ili9488_draw_pixmap(botaoUnlock.x,
-							botaoUnlock.y,
-							botaoUnlock.image->width,
-							botaoUnlock.image->height,
-							botaoUnlock.image->data);
-		
-		unlocked_flag = true;
-	}
-	
-	else{
-		draw_screen();
+		draw_screen();		
 		ili9488_draw_pixmap(botaoLock.x,
-							botaoLock.y,
-							botaoLock.image->width,
-							botaoLock.image->height,
-							botaoLock.image->data);
-		
-		unlocked_flag = false;
+		botaoLock.y,
+		botaoLock.image->width,
+		botaoLock.image->height,
+		botaoLock.image->data);
+		unlocked_flag = true;
+		return;
 	}
 }
 
 void lock_callback(void){
-	draw_screen();								  
-	ili9488_draw_pixmap(botaoLock.x,
-						botaoLock.y,
-						botaoLock.image->width,
-						botaoLock.image->height,
-						botaoLock.image->data);
-						
-	unlocked_flag = false;
+	if(unlocked_flag == true){
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+		ili9488_draw_filled_rectangle(0, 0, ILI9488_LCD_WIDTH-1, ILI9488_LCD_HEIGHT-1);
+		//deixa lugar do botao branco
+		ili9488_draw_pixmap(botaoUnlock.x,
+		botaoUnlock.y,
+		botaoUnlock.image->width,
+		botaoUnlock.image->height,
+		botaoUnlock.image->data);
+		unlocked_flag = false;
+		return;
+	}				  
+
 }
 
 
@@ -400,7 +394,7 @@ void build_buttons(){
 	botaoUnlock.p_handler = unlock_callback;
 	botaoUnlock.image = &unlock;
 	
-	botaoLock.x = 400;
+	botaoLock.x = 20;
 	botaoLock.y = 240;
 	botaoLock.size_x = 70;
 	botaoLock.size_y = 70;
@@ -471,8 +465,8 @@ int main(void)
 	build_buttons();
 	draw_diary_page();
 				
-	struct botao botoes[10] = {botaoLavagemDiaria, botaoDireita, botaoEsquerda};
-	n_botoes_na_tela = 3;
+	struct botao botoes[10] = {botaoLavagemDiaria, botaoDireita, botaoEsquerda, botaoUnlock, botaoLock};
+	n_botoes_na_tela = 5;
 		
 	while (true) {
 		/* Check for any pending messages and run message handler if any
