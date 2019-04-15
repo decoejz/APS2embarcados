@@ -133,33 +133,79 @@ struct botao botaoEsquerda;
 struct botao botaoLock;
 struct botao botaoUnlock;
 
+volatile bool unlocked_flag = false;
+
 void diario_callback(void){
-	printf("/n/rbeleza/n/r");
+	printf("entrou no handler diario_callback");
 }
 
 void slice_right_callback(void){
-	printf("\n\r1111111\n\r");
+	printf("clicou na direita");
 }
 
 void slice_left_callback(void){
-	printf("\n\r2222222\n\r");
+	printf("clicou na esquerda");
 }
 
 void unlock_callback(void){
+	if(unlocked_flag == false){
+		
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_RED));
+		ili9488_draw_filled_rectangle(botaoLock.x,
+										botaoLock.y,
+										botaoLock.image->width + botaoUnlock.x,
+										botaoLock.image->height + botaoUnlock.y);
+										
+		ili9488_draw_pixmap(botaoUnlock.x,
+							botaoUnlock.y,
+							botaoUnlock.image->width,
+							botaoUnlock.image->height,
+							botaoUnlock.image->data);
+		
+		unlocked_flag = true;
+	}
 	
+	else{
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_RED));
+		ili9488_draw_filled_rectangle(botaoUnlock.x,
+										botaoUnlock.y,
+										botaoUnlock.image->width + botaoLock.x,
+										botaoUnlock.image->height + botaoLock.y);
+		ili9488_draw_pixmap(botaoLock.x,
+							botaoLock.y,
+							botaoLock.image->width,
+							botaoLock.image->height,
+							botaoLock.image->data);
+		
+		unlocked_flag = false;
+	}
 }
 
 void lock_callback(void){
-	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_RED));
+	ili9488_draw_filled_rectangle(botaoUnlock.x,
+								  botaoUnlock.y,
+								  botaoUnlock.image->width + botaoUnlock.x,
+								  botaoUnlock.image->height + botaoUnlock.y);
+								  
+	ili9488_draw_pixmap(botaoLock.x,
+						botaoLock.y,
+						botaoLock.image->width,
+						botaoLock.image->height,
+						botaoLock.image->data);
+						
+	unlocked_flag = false;
 }
 
 
-int processa_touch(struct botao b[], struct botao *rtn, uint N ,uint x, uint y ){
+
+int processa_touch(struct botao *b, struct botao *rtn, uint N ,uint x, uint y ){
 	for (int i=0; i<N; i++){
-		if (((x >= b[i].x) && (x <= b[i].x + b[i].size_x)) && ((y >= b[i].y) && (y <= b[i].y + b[i].size_y))){
-			*rtn = b[i];
+		if (((x >= b->x) && (x <= b->x + b->size_x)) && ((y >= b->y) && (y <= b->y + b->size_y))){
+			*rtn = *b;
 			return 1;
 		}
+		b++;
 	}
 	return 0;
 }
@@ -312,7 +358,7 @@ void update_screen(uint32_t tx, uint32_t ty) {
 	}
 }
 
-void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
+void mxt_handler(struct mxt_device *device, struct botao *botoes, uint Nbotoes)
 {
 	/* USART tx buffer initialized to 0 */
 	char tx_buf[STRING_LENGTH * MAX_ENTRIES] = {0};
@@ -339,12 +385,12 @@ void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
 		uint32_t conv_y = convert_axis_system_x(touch_event.y);
 		
 		/* Format a new entry in the data string that will be sent over USART */
-		//sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
+		sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
 		
 		/* -----------------------------------------------------*/
 		struct botao bAtual;
 		if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y)){
-			printf("/n/rTamu ai/n/r");
+			printf("Entrou no handler geral");
 			bAtual.p_handler();
 		}
 		//update_screen(conv_x, conv_y);
@@ -420,11 +466,20 @@ void draw_diary_page(){
 	botaoEsquerda.image->height,
 	botaoEsquerda.image->data);
 	
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
+	
 	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
 						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
 						"Lavagem diaria" );
 }
+
+
+	
 
 
 int main(void)
@@ -455,13 +510,20 @@ int main(void)
 	build_buttons();
 	draw_diary_page();
 	
-	struct botao botoes[] = {&botaoLavagemDiaria, &botaoDireita, &botaoEsquerda, &botaoUnlock, &botaoLock};
+	struct botao botoes[] = { botaoLavagemDiaria,botaoEsquerda};
 			
+	struct botao botoes_2[5];
+	botoes_2[0] = botaoLavagemDiaria;
+	botoes_2[1] = botaoDireita;
+	botoes_2[2] = botaoEsquerda;
+	botoes_2[3] = botaoUnlock;
+	botoes_2[4] = botaoLock;
+		
 	while (true) {
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
-			mxt_handler(&device, botoes, 5);
+			mxt_handler(&device, botoes_2, 5);
 		}	
 	}
 
