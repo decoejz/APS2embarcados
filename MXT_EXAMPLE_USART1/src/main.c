@@ -121,7 +121,8 @@ const uint32_t BUTTON_Y = ILI9488_LCD_HEIGHT/4;
 struct botao {
 	uint16_t x;
 	uint16_t y;
-	uint16_t size;
+	uint16_t size_x;
+	uint16_t size_y;
 	tImage *image;
 	void (*p_handler)(void);
 };	
@@ -133,15 +134,15 @@ struct botao botaoLock;
 struct botao botaoUnlock;
 
 void diario_callback(void){
-	
+	printf("/n/rbeleza/n/r");
 }
 
 void slice_right_callback(void){
-	
+	printf("\n\r1111111\n\r");
 }
 
 void slice_left_callback(void){
-	
+	printf("\n\r2222222\n\r");
 }
 
 void unlock_callback(void){
@@ -154,7 +155,13 @@ void lock_callback(void){
 
 
 int processa_touch(struct botao b[], struct botao *rtn, uint N ,uint x, uint y ){
-	
+	for (int i=0; i<N; i++){
+		if (((x >= b[i].x) && (x <= b[i].x + b[i].size_x)) && ((y >= b[i].y) && (y <= b[i].y + b[i].size_y))){
+			*rtn = b[i];
+			return 1;
+		}
+	}
+	return 0;
 }
 
 	
@@ -326,16 +333,20 @@ void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
 		}
 		
 		 // eixos trocados (quando na vertical LCD)
-		uint32_t conv_x = convert_axis_system_x(touch_event.y);
-		uint32_t conv_y = convert_axis_system_y(touch_event.x);
+		//uint32_t conv_x = convert_axis_system_x(touch_event.y);
+		//uint32_t conv_y = convert_axis_system_y(touch_event.x);
+		uint32_t conv_x = convert_axis_system_y(touch_event.x);
+		uint32_t conv_y = convert_axis_system_x(touch_event.y);
 		
 		/* Format a new entry in the data string that will be sent over USART */
-		sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
+		//sprintf(buf, "X:%3d Y:%3d \n", conv_x, conv_y);
 		
 		/* -----------------------------------------------------*/
 		struct botao bAtual;
-		if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y))
+		if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y)){
+			printf("/n/rTamu ai/n/r");
 			bAtual.p_handler();
+		}
 		//update_screen(conv_x, conv_y);
 		/* -----------------------------------------------------*/
 
@@ -356,31 +367,36 @@ void mxt_handler(struct mxt_device *device, struct botao botoes[], uint Nbotoes)
 void build_buttons(){
 	botaoLavagemDiaria.x = 150;
 	botaoLavagemDiaria.y = 50;
-	botaoLavagemDiaria.size = 100;
+	botaoLavagemDiaria.size_x = 180;
+	botaoLavagemDiaria.size_y = 180;
 	botaoLavagemDiaria.p_handler = diario_callback;
 	botaoLavagemDiaria.image = &diario;
 
 	botaoDireita.x = 400;
 	botaoDireita.y = 90;
-	botaoDireita.size = 100;
+	botaoDireita.size_x = 75;
+	botaoDireita.size_y = 110;
 	botaoDireita.p_handler = slice_right_callback;
 	botaoDireita.image = &right_arrow;
 	
 	botaoEsquerda.x = 20;
 	botaoEsquerda.y = 90;
-	botaoEsquerda.size = 100;
+	botaoEsquerda.size_x = 75;
+	botaoEsquerda.size_y = 110;
 	botaoEsquerda.p_handler = slice_left_callback;
 	botaoEsquerda.image = &left_arrow;
 
 	botaoUnlock.x = 400;
 	botaoUnlock.y = 240;
-	botaoUnlock.size = 100;
+	botaoUnlock.size_x = 70;
+	botaoUnlock.size_y = 70;
 	botaoUnlock.p_handler = unlock_callback;
 	botaoUnlock.image = &unlock;
 	
 	botaoLock.x = 400;
 	botaoLock.y = 240;
-	botaoLock.size = 100;
+	botaoLock.size_x = 70;
+	botaoLock.size_y = 70;
 	botaoLock.p_handler = lock_callback;
 	botaoLock.image = &lock;
 }
@@ -408,8 +424,6 @@ void draw_diary_page(){
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
 						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
 						"Lavagem diaria" );
-						
-	//ili9488_draw_filled_rectangle(480,320,0,0);
 }
 
 
@@ -447,7 +461,7 @@ int main(void)
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
-			mxt_handler(&device, botoes, 4);
+			mxt_handler(&device, botoes, 5);
 		}	
 	}
 
