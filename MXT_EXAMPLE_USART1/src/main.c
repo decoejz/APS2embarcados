@@ -84,13 +84,7 @@
  * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip Support</a>
  */
 
-#include <asf.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include "conf_board.h"
-#include "conf_example.h"
-#include "conf_uart_serial.h"
+#include <all_in.h>
 
  typedef struct {
 	 const uint8_t *data;
@@ -99,13 +93,7 @@
 	 uint8_t dataSize;
  } tImage;
 
-#include "icones/diario.h"
-#include "icones/right_arrow.h"
-#include "icones/left_arrow.h"
-#include "icones/unlock.h"
-#include "icones/lock.h"
-#include "icones/pesado.h"
-#include "icones/rapido.h"
+#include <images.h>
 
 #define MAX_ENTRIES        3
 #define STRING_LENGTH     70
@@ -124,39 +112,77 @@ struct botao {
 	void (*p_handler)(void);
 };	
 
-struct botao botaoLavagemDiaria;
-struct botao botaoLavagemPesada;
-struct botao botaoLavagemRapida;
-struct botao botaoDireita;
-struct botao botaoEsquerda;
-struct botao botaoLock;
-struct botao botaoUnlock;
+#include <functions.h>
 
-void draw_screen(void);
-void draw_heavy_page();
-void draw_fast_page();
-void draw_diary_page();
+volatile int n_botoes_na_tela = 0;
 
-volatile int n_botoes_na_tela;
+/*
+* 0 - diaria
+* 1 - pesada
+* 2 - rapida
+*/
 volatile int initial_screen = 0;
 
 struct botao botoes[10];
 
 volatile bool unlocked_flag = true;
 
-void diario_callback(void){
+void home_callback(void){
 	draw_screen();
+	
+	if(initial_screen == 0){
+		draw_diary_page();
+		botoes[0] = botaoLavagemPesada;
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
+	}
+	else if(initial_screen == 1){
+		draw_heavy_page();
+		botoes[0] = botaoLavagemRapida;
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
+		
+	}
+	else if(initial_screen == 2){
+		draw_fast_page();
+		botoes[0] = botaoLavagemDiaria;
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
+	}
 
 }
 
-void rapido_callback(void){
+void play_pause_callback(void){
 	draw_screen();
-
+	
+	if(initial_screen == 0){
+		//Diario
+	}
+	else if(initial_screen == 1){
+		//Pesado
+	}
+	else if(initial_screen == 2){
+		//Rapido
+	}
 }
 
-void pesado_callback(void){
+void lavagem_callback(void){
 	draw_screen();
-
+	draw_laundry_menu();
+		
+	botoes[0] = botaoHome;
+	botoes[1] = botaoPlayPause;
+	
+	n_botoes_na_tela = 2;
 }
 
 void slice_right_callback(void){
@@ -391,7 +417,6 @@ void draw_screen(void) {
 	ili9488_draw_filled_rectangle(0, 0, ILI9488_LCD_WIDTH-1, ILI9488_LCD_HEIGHT-1);
 }
 
-
 uint32_t convert_axis_system_x(uint32_t touch_y) {
 	// entrada: 4096 - 0 (sistema de coordenadas atual)
 	return ILI9488_LCD_HEIGHT - ILI9488_LCD_HEIGHT*touch_y/4096;
@@ -461,21 +486,21 @@ void build_buttons(){
 	botaoLavagemDiaria.y = 50;
 	botaoLavagemDiaria.size_x = 180;
 	botaoLavagemDiaria.size_y = 180;
-	botaoLavagemDiaria.p_handler = diario_callback;
+	botaoLavagemDiaria.p_handler = lavagem_callback;
 	botaoLavagemDiaria.image = &diario;
 	
 	botaoLavagemPesada.x = 150;
 	botaoLavagemPesada.y = 50;
 	botaoLavagemPesada.size_x = 180;
 	botaoLavagemPesada.size_y = 180;
-	botaoLavagemPesada.p_handler = pesado_callback;
+	botaoLavagemPesada.p_handler = lavagem_callback;
 	botaoLavagemPesada.image = &pesado;
 	
 	botaoLavagemRapida.x = 150;
 	botaoLavagemRapida.y = 50;
 	botaoLavagemRapida.size_x = 180;
 	botaoLavagemRapida.size_y = 180;
-	botaoLavagemRapida.p_handler = rapido_callback;
+	botaoLavagemRapida.p_handler = lavagem_callback;
 	botaoLavagemRapida.image = &rapido;
 
 	botaoDireita.x = 400;
@@ -505,6 +530,43 @@ void build_buttons(){
 	botaoLock.size_y = 70;
 	botaoLock.p_handler = lock_callback;
 	botaoLock.image = &lock;
+	
+	botaoHome.x = 20;
+	botaoHome.y = 90;
+	botaoHome.size_x = 100;
+	botaoHome.size_y = 100;
+	botaoHome.p_handler = home_callback;
+	botaoHome.image = &home;
+	
+	botaoPlayPause.x = 380;
+	botaoPlayPause.y = 90;
+	botaoPlayPause.size_x = 100;
+	botaoPlayPause.size_y = 100;
+	botaoPlayPause.p_handler = play_pause_callback;
+	botaoPlayPause.image = &play_pause;
+}
+
+void draw_laundry_menu(){
+	ili9488_draw_pixmap(botaoHome.x,
+	botaoHome.y,
+	botaoHome.image->width,
+	botaoHome.image->height,
+	botaoHome.image->data);
+	
+	ili9488_draw_pixmap(botaoPlayPause.x,
+	botaoPlayPause.y,
+	botaoPlayPause.image->width,
+	botaoPlayPause.image->height,
+	botaoPlayPause.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(botaoHome.x + 25,
+						botaoHome.y + botaoHome.image->height + 10,
+						"MENU" );
+	
+	ili9488_draw_string(botaoPlayPause.x + 5,
+	botaoPlayPause.y + botaoPlayPause.image->height + 10,
+	"INICIAR" );
 }
 
 void draw_diary_page(){

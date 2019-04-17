@@ -1017,6 +1017,9 @@
     <None Include="src\ASF\common\boards\board.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\all_in.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\ASF\common\components\touch\mxt\mxt_device_1.c">
       <SubType>compile</SubType>
     </Compile>
@@ -1338,7 +1341,13 @@
     <None Include="src\config\conf_ili9488.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\functions.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\icones\diario.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\icones\home.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\icones\left_arrow.h">
@@ -1350,6 +1359,9 @@
     <Compile Include="src\icones\pesado.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\icones\play_pause.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\icones\rapido.h">
       <SubType>compile</SubType>
     </Compile>
@@ -1357,6 +1369,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\icones\unlock.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\images.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="src\main.c">
