@@ -9049,7 +9049,7 @@ OUTPUT(MXT_EXAMPLE_USART1.elf elf32-littlearm)
  .debug_str     0x000936a4      0x768 src/ASF/sam/utils/syscalls/gcc/syscalls.o
                                0x745c (size before relaxing)
  .debug_str     0x00093e0c     0x16fe src/main.o
-                              0x90e36 (size before relaxing)
+                              0x90e45 (size before relaxing)
 
 .debug_frame    0x00000000     0x3514
  .debug_frame   0x00000000      0x1d4 src/ASF/common/components/touch/mxt/mxt_device_1.o

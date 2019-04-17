@@ -261,7 +261,7 @@ void slice_left_callback(void){
 }
 
 void unlock_callback(void){
-	if(unlocked_flag == false){
+	if(unlocked_flag == true){
 		//deixa lugar do botao branco
 		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
 		ili9488_draw_filled_rectangle(botaoLock.x, botaoLock.y, botaoLock.x + botaoLock.image->width, botaoLock.y + botaoLock.image->height);
@@ -272,13 +272,13 @@ void unlock_callback(void){
 							botaoLock.image->width,
 							botaoLock.image->height,
 							botaoLock.image->data);
-		unlocked_flag = true;
+		unlocked_flag = false;
 		return;
 	}
 }
 
 void lock_callback(void){
-	if(unlocked_flag == true){
+	if(unlocked_flag == false){
 		//deixa lugar do botao branco
 		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
 		ili9488_draw_filled_rectangle(botaoUnlock.x, botaoUnlock.y, botaoUnlock.x + botaoUnlock.image->width, botaoUnlock.y + botaoUnlock.image->height);
@@ -290,7 +290,7 @@ void lock_callback(void){
 							botaoUnlock.image->width,
 							botaoUnlock.image->height,
 							botaoUnlock.image->data);
-		unlocked_flag = false;
+		unlocked_flag = true;
 		return;
 	}				  
 
