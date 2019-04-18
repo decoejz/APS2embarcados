@@ -84,35 +84,7 @@
  * Support and FAQ: visit <a href="https://www.microchip.com/support/">Microchip Support</a>
  */
 
-#include <all_in.h>
-
- typedef struct {
-	 const uint8_t *data;
-	 uint16_t width;
-	 uint16_t height;
-	 uint8_t dataSize;
- } tImage;
-
-#include <images.h>
-
-#define MAX_ENTRIES        3
-#define STRING_LENGTH     70
-
-#define USART_TX_MAX_LENGTH     0xff
-
-struct ili9488_opt_t g_ili9488_display_opt;
-
-/** \brief Touch event struct */
-struct botao {
-	uint16_t x;
-	uint16_t y;
-	uint16_t size_x;
-	uint16_t size_y;
-	tImage *image;
-	void (*p_handler)(void);
-};	
-
-#include <functions.h>
+#include "main.h"
 
 volatile int n_botoes_na_tela = 0;
 
@@ -121,7 +93,7 @@ volatile int n_botoes_na_tela = 0;
 * 1 - pesada
 * 2 - rapida
 */
-volatile int initial_screen = 0;
+volatile int laundry_event = 0;
 
 struct botao botoes[10];
 
@@ -130,7 +102,7 @@ volatile bool unlocked_flag = true;
 void home_callback(void){
 	draw_screen();
 	
-	if(initial_screen == 0){
+	if(laundry_event == 0){
 		draw_diary_page();
 		botoes[0] = botaoLavagemPesada;
 		botoes[1] = botaoDireita;
@@ -139,7 +111,7 @@ void home_callback(void){
 		botoes[4] = botaoLock;
 		n_botoes_na_tela = 5;
 	}
-	else if(initial_screen == 1){
+	else if(laundry_event == 1){
 		draw_heavy_page();
 		botoes[0] = botaoLavagemRapida;
 		botoes[1] = botaoDireita;
@@ -147,9 +119,8 @@ void home_callback(void){
 		botoes[3] = botaoUnlock;
 		botoes[4] = botaoLock;
 		n_botoes_na_tela = 5;
-		
 	}
-	else if(initial_screen == 2){
+	else if(laundry_event == 2){
 		draw_fast_page();
 		botoes[0] = botaoLavagemDiaria;
 		botoes[1] = botaoDireita;
@@ -164,13 +135,13 @@ void home_callback(void){
 void play_pause_callback(void){
 	draw_screen();
 	
-	if(initial_screen == 0){
+	if(laundry_event == 0){
 		//Diario
 	}
-	else if(initial_screen == 1){
+	else if(laundry_event == 1){
 		//Pesado
 	}
-	else if(initial_screen == 2){
+	else if(laundry_event == 2){
 		//Rapido
 	}
 }
@@ -189,8 +160,8 @@ void slice_right_callback(void){
 	if (unlocked_flag){
 		draw_screen();
 		
-		if(initial_screen == 0){
-			initial_screen = 1;
+		if(laundry_event == 0){
+			laundry_event = 1;
 			draw_heavy_page();
 			botoes[0] = botaoLavagemPesada;
 			botoes[1] = botaoDireita;
@@ -199,8 +170,8 @@ void slice_right_callback(void){
 			botoes[4] = botaoLock;
 			n_botoes_na_tela = 5;
 		}
-		else if(initial_screen == 1){
-			initial_screen = 2;
+		else if(laundry_event == 1){
+			laundry_event = 2;
 			draw_fast_page();
 			botoes[0] = botaoLavagemRapida;
 			botoes[1] = botaoDireita;
@@ -210,8 +181,8 @@ void slice_right_callback(void){
 			n_botoes_na_tela = 5;
 			
 		}
-		else if(initial_screen == 2){
-			initial_screen = 0;
+		else if(laundry_event == 2){
+			laundry_event = 0;
 			draw_diary_page();
 			botoes[0] = botaoLavagemDiaria;
 			botoes[1] = botaoDireita;
@@ -227,8 +198,8 @@ void slice_left_callback(void){
 	if (unlocked_flag){
 		draw_screen();
 		
-		if(initial_screen == 0){
-			initial_screen = 2;
+		if(laundry_event == 0){
+			laundry_event = 2;
 			draw_fast_page();
 			botoes[0] = botaoLavagemRapida;
 			botoes[1] = botaoDireita;
@@ -237,8 +208,8 @@ void slice_left_callback(void){
 			botoes[4] = botaoLock;
 			n_botoes_na_tela = 5;
 		}
-		else if(initial_screen == 1){
-			initial_screen = 0;
+		else if(laundry_event == 1){
+			laundry_event = 0;
 			draw_diary_page();
 			botoes[0] = botaoLavagemDiaria;
 			botoes[1] = botaoDireita;
@@ -247,8 +218,8 @@ void slice_left_callback(void){
 			botoes[4] = botaoLock;
 			n_botoes_na_tela = 5;
 		}
-		else if(initial_screen == 2){
-			initial_screen = 1;
+		else if(laundry_event == 2){
+			laundry_event = 1;
 			draw_heavy_page();
 			botoes[0] = botaoLavagemPesada;
 			botoes[1] = botaoDireita;
@@ -461,7 +432,6 @@ void mxt_handler(struct mxt_device *device, struct botao *botoes, uint Nbotoes)
 			/* -----------------------------------------------------*/
 			struct botao bAtual;
 			if(processa_touch(botoes, &bAtual, Nbotoes, conv_x, conv_y)){
-				printf("Entrou no handler geral");
 				bAtual.p_handler();
 			}
 			//update_screen(conv_x, conv_y);
@@ -479,6 +449,32 @@ void mxt_handler(struct mxt_device *device, struct botao *botoes, uint Nbotoes)
 	if (i > 0) {
 		usart_serial_write_packet(USART_SERIAL_EXAMPLE, (uint8_t *)tx_buf, strlen(tx_buf));
 	}
+}
+
+void build_laundry_types(){
+	//c_rapido.nome = "Rapido";
+	c_rapido.enxagueTempo = 5;
+	c_rapido.enxagueQnt = 3;
+	c_rapido.centrifugacaoRPM = 900;
+	c_rapido.centrifugacaoTempo = 5;
+	c_rapido.heavy = 0;
+	c_rapido.bubblesOn = 1;
+
+	//c_diario.nome = "Diario";
+	c_diario.enxagueTempo = 15;
+	c_diario.enxagueQnt = 2;
+	c_diario.centrifugacaoRPM = 1200;
+	c_diario.centrifugacaoTempo = 8;
+	c_diario.heavy = 0;
+	c_diario.bubblesOn = 1;
+	
+	//c_pesado.nome = "Pesado";
+	c_pesado.enxagueTempo = 10;
+	c_pesado.enxagueQnt = 3;
+	c_pesado.centrifugacaoRPM = 1200;
+	c_pesado.centrifugacaoTempo = 10;
+	c_pesado.heavy = 1;
+	c_pesado.bubblesOn = 1;
 }
 
 void build_buttons(){
@@ -667,7 +663,7 @@ int main(void)
 	board_init();  /* Initialize board */
 	configure_lcd();
 	draw_screen();
-	//draw_button(0);
+	
 	/* Initialize the mXT touch device */
 	mxt_init(&device);
 	
@@ -677,6 +673,7 @@ int main(void)
 	printf("\n\rmaXTouch data USART transmitter\n\r");
 	
 	build_buttons();
+	build_laundry_types();
 	draw_diary_page();
 				
 	botoes[0] = botaoLavagemDiaria;

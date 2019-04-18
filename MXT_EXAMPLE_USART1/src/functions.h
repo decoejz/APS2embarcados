@@ -1,13 +1,3 @@
-struct botao botaoLavagemDiaria;
-struct botao botaoLavagemPesada;
-struct botao botaoLavagemRapida;
-struct botao botaoDireita;
-struct botao botaoEsquerda;
-struct botao botaoLock;
-struct botao botaoUnlock;
-struct botao botaoHome;
-struct botao botaoPlayPause;
-
 void draw_screen(void);
 void draw_heavy_page();
 void draw_fast_page();
@@ -27,3 +17,4 @@ void slice_right_callback(void);
 void lavagem_callback(void);
 void play_pause_callback(void);
 void home_callback(void);
+void build_laundry_types();

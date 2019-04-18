@@ -1,3 +1,10 @@
+ typedef struct {
+	 const uint8_t *data;
+	 uint16_t width;
+	 uint16_t height;
+	 uint8_t dataSize;
+ } tImage;
+ 
 #include "icones/diario.h"
 #include "icones/right_arrow.h"
 #include "icones/left_arrow.h"
