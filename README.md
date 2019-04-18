@@ -2,6 +2,7 @@
 
 A descrição do projeto pode ser encontrada no repositório da materia em https://github.com/Insper/ComputacaoEmbarcada/wiki/APS-2-Interface
 
-<bold>Imagens Utilizadas:</bold>
+
+Imagens Utilizadas:
 
 Todas as imagens foram retiradas do site www.flaticon.com
