@@ -1,5 +1,5 @@
-src/main.d src/main.o: ../src/main.c ../src/all_in.h ../src/asf.h \
- ../src/ASF/sam/utils/compiler.h \
+src/main.d src/main.o: ../src/main.c ../src/main.h ../src/all_in.h \
+ ../src/asf.h ../src/ASF/sam/utils/compiler.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.3.1\include\stddef.h \
  ../src/ASF/common/utils/parts.h \
  ../src/ASF/sam/utils/preprocessor/preprocessor.h \
@@ -162,7 +162,7 @@ src/main.d src/main.o: ../src/main.c ../src/all_in.h ../src/asf.h \
  ../src/ASF/common/services/ioport/ioport.h \
  ../src/ASF/common/services/ioport/sam/ioport_pio.h \
  ../src/ASF/sam/drivers/mpu/mpu.h ../src/ASF/sam/drivers/pmc/sleep.h \
- ../src/ASF/sam/utils/fpu/fpu.h \
+ ../src/rtc.h ../src/ASF/sam/utils/fpu/fpu.h \
  ../src/ASF/sam/boards/same70_xplained/led.h \
  ../src/ASF/common/services/spi/sam_spi/spi_master.h \
  ../src/ASF/sam/drivers/spi/spi.h ../src/config/conf_spi_master.h \
@@ -185,7 +185,12 @@ src/main.d src/main.o: ../src/main.c ../src/all_in.h ../src/asf.h \
  ../src/icones/diario.h ../src/icones/right_arrow.h \
  ../src/icones/left_arrow.h ../src/icones/unlock.h ../src/icones/lock.h \
  ../src/icones/pesado.h ../src/icones/rapido.h ../src/icones/play_pause.h \
- ../src/icones/home.h ../src/functions.h
+ ../src/icones/home.h ../src/icones/OK.h ../src/icones/nop.h \
+ ../src/fontes/sourcecodepro_28.h ../src/fontes/calibri_36.h \
+ ../src/fontes/arial_72.h ../src/buttons.h ../src/functions.h \
+ ../src/lavagens.h ../src/pios.h
+
+../src/main.h:
 
 ../src/all_in.h:
 
@@ -525,6 +530,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../src/ASF/sam/drivers/pmc/sleep.h:
 
+../src/rtc.h:
+
 ../src/ASF/sam/utils/fpu/fpu.h:
 
 ../src/ASF/sam/boards/same70_xplained/led.h:
@@ -595,4 +602,20 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 
 ../src/icones/home.h:
 
+../src/icones/OK.h:
+
+../src/icones/nop.h:
+
+../src/fontes/sourcecodepro_28.h:
+
+../src/fontes/calibri_36.h:
+
+../src/fontes/arial_72.h:
+
+../src/buttons.h:
+
 ../src/functions.h:
+
+../src/lavagens.h:
+
+../src/pios.h:

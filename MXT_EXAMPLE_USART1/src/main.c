@@ -108,106 +108,123 @@ void door_callback(){
 }
 
 void home_callback(void){
-	draw_screen();
-	
-	if(laundry_event == 0){
-		draw_diary_page();
-		botoes[0] = botaoLavagemPesada;
+	if(unlocked_flag){
+		draw_screen();
+		
+		if(laundry_event == 0){
+			draw_diary_page();
+			botoes[0] = botaoLavagemPesada;
+		}
+		else if(laundry_event == 1){
+			draw_heavy_page();
+			botoes[0] = botaoLavagemRapida;
+		}
+		else if(laundry_event == 2){
+			draw_fast_page();
+			botoes[0] = botaoLavagemDiaria;
+		}
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
 	}
-	else if(laundry_event == 1){
-		draw_heavy_page();
-		botoes[0] = botaoLavagemRapida;
-	}
-	else if(laundry_event == 2){
-		draw_fast_page();
-		botoes[0] = botaoLavagemDiaria;
-	}
-	botoes[1] = botaoDireita;
-	botoes[2] = botaoEsquerda;
-	n_botoes_na_tela = 3;
 }
 
 void play_pause_callback(void){
-	draw_screen();
+	if(unlocked_flag){
+		draw_screen();
 	
-	if(!door_open){
-		if(laundry_event == 0){
-			//Diario
-			time_left = calculate_total_time(c_diario);
-		}
-		else if(laundry_event == 1){
-			//Pesado
-			time_left = calculate_total_time(c_pesado);
-		}
-		else if(laundry_event == 2){
-			//Rapido
-			time_left = calculate_total_time(c_rapido);
-		}
+		if(!door_open){
+			if(laundry_event == 0){
+				//Diario
+				time_left = calculate_total_time(c_diario);
+			}
+			else if(laundry_event == 1){
+				//Pesado
+				time_left = calculate_total_time(c_pesado);
+			}
+			else if(laundry_event == 2){
+				//Rapido
+				time_left = calculate_total_time(c_rapido);
+			}
 	
-		draw_working(time_left);
+			draw_working(time_left);
 	
-		rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
-	}
-	else{
-		draw_door_open();
+			rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
+		}
+		else{
+			draw_door_open();
+		}
 	}
 }
 
 void lavagem_callback(void){
-	draw_screen();
-	draw_laundry_menu();
+	if(unlocked_flag){
+		draw_screen();
+		draw_laundry_menu();
 		
-	botoes[0] = botaoHome;
-	botoes[1] = botaoPlayPause;
-	
-	n_botoes_na_tela = 2;
+		botoes[0] = botaoHome;
+		botoes[1] = botaoPlayPause;
+		botoes[2] = botaoUnlock;
+		botoes[3] = botaoLock;
+		
+		n_botoes_na_tela = 4;
+	}
 }
-
 void slice_right_callback(void){
-	draw_screen();
 	
-	if(laundry_event == 0){
-		laundry_event = 1;
-		draw_heavy_page();
-		botoes[0] = botaoLavagemPesada;
+	if(unlocked_flag){
+		draw_screen();
+		if(laundry_event == 0){
+			laundry_event = 1;
+			draw_heavy_page();
+			botoes[0] = botaoLavagemPesada;
+		}
+		else if(laundry_event == 1){
+			laundry_event = 2;
+			draw_fast_page();
+			botoes[0] = botaoLavagemRapida;
+		}
+		else if(laundry_event == 2){
+			laundry_event = 0;
+			draw_diary_page();
+			botoes[0] = botaoLavagemDiaria;
+		}
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
 	}
-	else if(laundry_event == 1){
-		laundry_event = 2;
-		draw_fast_page();
-		botoes[0] = botaoLavagemRapida;
-	}
-	else if(laundry_event == 2){
-		laundry_event = 0;
-		draw_diary_page();
-		botoes[0] = botaoLavagemDiaria;
-	}
-	botoes[1] = botaoDireita;
-	botoes[2] = botaoEsquerda;
-	n_botoes_na_tela = 3;
-	
 }
 
 void slice_left_callback(void){
-	draw_screen();
 	
-	if(laundry_event == 0){
-		laundry_event = 2;
-		draw_fast_page();
-		botoes[0] = botaoLavagemRapida;
+	if(unlocked_flag){
+		draw_screen();
+		if(laundry_event == 0){
+			laundry_event = 2;
+			draw_fast_page();
+			botoes[0] = botaoLavagemRapida;
+		}
+		else if(laundry_event == 1){
+			laundry_event = 0;
+			draw_diary_page();
+			botoes[0] = botaoLavagemDiaria;
+		}
+		else if(laundry_event == 2){
+			laundry_event = 1;
+			draw_heavy_page();
+			botoes[0] = botaoLavagemPesada;
+		}
+		botoes[1] = botaoDireita;
+		botoes[2] = botaoEsquerda;
+		botoes[3] = botaoUnlock;
+		botoes[4] = botaoLock;
+		n_botoes_na_tela = 5;
 	}
-	else if(laundry_event == 1){
-		laundry_event = 0;
-		draw_diary_page();
-		botoes[0] = botaoLavagemDiaria;
-	}
-	else if(laundry_event == 2){
-		laundry_event = 1;
-		draw_heavy_page();
-		botoes[0] = botaoLavagemPesada;
-	}
-	botoes[1] = botaoDireita;
-	botoes[2] = botaoEsquerda;
-	n_botoes_na_tela = 3;
+	
 }
 
 void unlock_callback(void){
@@ -555,6 +572,12 @@ void draw_laundry_menu(){
 	ili9488_draw_string(botaoPlayPause.x + 5,
 	botaoPlayPause.y + botaoPlayPause.image->height + 10,
 	"INICIAR" );
+	
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
 }
 
 void draw_diary_page(){
@@ -580,6 +603,12 @@ void draw_diary_page(){
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
 						botaoLavagemDiaria.y + botaoLavagemDiaria.image->height + 10,
 						"LAVAGEM DIARIA" );
+						
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
 }
 
 void draw_fast_page(){
@@ -605,6 +634,12 @@ void draw_fast_page(){
 	ili9488_draw_string(botaoLavagemRapida.x + 5,
 						botaoLavagemRapida.y + botaoLavagemRapida.image->height + 10,
 						"LAVAGEM RAPIDA" );
+						
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
 }
 
 void draw_heavy_page(){
@@ -630,6 +665,13 @@ void draw_heavy_page(){
 	ili9488_draw_string(botaoLavagemPesada.x + 5,
 						botaoLavagemPesada.y + botaoLavagemPesada.image->height + 10,
 						"LAVAGEM PESADA" );
+						
+						
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
 }
 
 void RTC_Handler(void)
@@ -721,11 +763,6 @@ void draw_working(int time_left){
 	sprintf(total_left,"%02d",time_left);
 	font_draw_text(&calibri_36, total_left, 150, 75, 1);
 	
-	ili9488_draw_pixmap(botaoUnlock.x,
-	botaoUnlock.y,
-	botaoUnlock.image->width,
-	botaoUnlock.image->height,
-	botaoUnlock.image->data);
 }
 
 void draw_door_open(){
@@ -743,6 +780,7 @@ void draw_door_open(){
 	
 	botoes[0] = botaoOk;
 	n_botoes_na_tela = 1;
+	
 }
 
 void draw_locked_door(){
@@ -822,8 +860,10 @@ int main(void)
 	botoes[0] = botaoLavagemDiaria;
 	botoes[1] = botaoDireita;
 	botoes[2] = botaoEsquerda;
+	botoes[3] = botaoUnlock;
+	botoes[4] = botaoLock;
 	
-	n_botoes_na_tela = 3;
+	n_botoes_na_tela = 5;
 	print_time_value = false;
 	door_open = true;
 		
