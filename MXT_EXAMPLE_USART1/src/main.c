@@ -100,6 +100,12 @@ volatile int laundry_event = 0;
 struct botao botoes[10];
 
 volatile bool unlocked_flag = true;
+volatile bool door_open;
+
+
+void door_callback(){
+	door_open = !door_open;
+}
 
 void home_callback(void){
 	draw_screen();
@@ -124,22 +130,27 @@ void home_callback(void){
 void play_pause_callback(void){
 	draw_screen();
 	
-	if(laundry_event == 0){
-		//Diario
-		time_left = calculate_total_time(c_diario);
-	}
-	else if(laundry_event == 1){
-		//Pesado
-		time_left = calculate_total_time(c_pesado);
-	}
-	else if(laundry_event == 2){
-		//Rapido
-		time_left = calculate_total_time(c_rapido);
-	}
+	if(!door_open){
+		if(laundry_event == 0){
+			//Diario
+			time_left = calculate_total_time(c_diario);
+		}
+		else if(laundry_event == 1){
+			//Pesado
+			time_left = calculate_total_time(c_pesado);
+		}
+		else if(laundry_event == 2){
+			//Rapido
+			time_left = calculate_total_time(c_rapido);
+		}
 	
-	draw_working(time_left);
+		draw_working(time_left);
 	
-	rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
+		rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
+	}
+	else{
+		draw_door_open();
+	}
 }
 
 void lavagem_callback(void){
@@ -515,6 +526,12 @@ void build_buttons(){
 	botaoOk.size_y = 100;
 	botaoOk.p_handler = home_callback;
 	botaoOk.image = &OK;
+	
+	imageNop.x = 115;
+	imageNop.y = 35;
+	imageNop.size_x = 251;
+	imageNop.size_y = 251;
+	imageNop.image = &nopImage;
 }
 
 void draw_laundry_menu(){
@@ -711,6 +728,34 @@ void draw_working(int time_left){
 	botaoUnlock.image->data);
 }
 
+void draw_door_open(){
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+	draw_screen();
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(135, 75, "A PORTA ESTA ABERTA" );
+	
+	ili9488_draw_pixmap(botaoOk.x,
+	botaoOk.y,
+	botaoOk.image->width,
+	botaoOk.image->height,
+	botaoOk.image->data);
+	
+	botoes[0] = botaoOk;
+	n_botoes_na_tela = 1;
+}
+
+void draw_locked_door(){
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+	draw_screen();
+	
+	ili9488_draw_pixmap(imageNop.x,
+	imageNop.y,
+	imageNop.image->width,
+	imageNop.image->height,
+	imageNop.image->data);
+}
+
 void print_time(void){	
 	time_left--;
 	
@@ -722,6 +767,24 @@ void print_time(void){
 		draw_done_laundry();
 	}
 }
+
+void init_led(void){
+	pmc_enable_periph_clk(LED1_PIO_ID);
+	
+	pio_set_output(LED1_PIO, LED1_PIO_IDX_MASK, 0, 0, 0);
+}
+
+void init_but(void){
+	pmc_enable_periph_clk(DOOR_PIO_ID);
+	
+	pio_set_input(DOOR_PIO, DOOR_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	
+	pio_enable_interrupt(DOOR_PIO, DOOR_PIO_IDX_MASK);
+	pio_handler_set(DOOR_PIO, DOOR_PIO_ID, DOOR_PIO_IDX_MASK, PIO_IT_FALL_EDGE, door_callback);
+	NVIC_EnableIRQ(DOOR_PIO_ID);
+	NVIC_SetPriority(DOOR_PIO_ID, 1);
+}
+
 
 int main(void)
 {
@@ -739,6 +802,8 @@ int main(void)
 	board_init();  /* Initialize board */
 	configure_lcd();
 	draw_screen();
+	init_led();
+	init_but();
 	
 	/* Initialize the mXT touch device */
 	mxt_init(&device);
@@ -760,6 +825,7 @@ int main(void)
 	
 	n_botoes_na_tela = 3;
 	print_time_value = false;
+	door_open = true;
 		
 	while (true) {
 		/* Check for any pending messages and run message handler if any
@@ -771,6 +837,19 @@ int main(void)
 		if (print_time_value){
 			print_time();
 			print_time_value = false;
+		}
+		
+		if(door_open){
+			if(time_left>0){
+				draw_locked_door();
+				door_open = false;
+			}
+			else{
+				pio_set(LED1_PIO,LED1_PIO_IDX_MASK);
+			}
+		}
+		else{
+			pio_clear(LED1_PIO,LED1_PIO_IDX_MASK);
 		}
 	}
 

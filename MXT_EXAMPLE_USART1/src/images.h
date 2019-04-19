@@ -27,6 +27,7 @@
 #include "icones/play_pause.h"
 #include "icones/home.h"
 #include "icones/OK.h"
+#include "icones/nop.h"
 #include "fontes/sourcecodepro_28.h"
 #include "fontes/calibri_36.h"
 #include "fontes/arial_72.h"
