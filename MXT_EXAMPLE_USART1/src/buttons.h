@@ -17,3 +17,4 @@ struct botao botaoLock;
 struct botao botaoUnlock;
 struct botao botaoHome;
 struct botao botaoPlayPause;
+struct botao botaoOk;

@@ -87,6 +87,8 @@
 #include "main.h"
 
 volatile int n_botoes_na_tela = 0;
+volatile Bool print_time_value;
+volatile int time_left = 0;
 
 /*
 * 0 - diaria
@@ -105,31 +107,18 @@ void home_callback(void){
 	if(laundry_event == 0){
 		draw_diary_page();
 		botoes[0] = botaoLavagemPesada;
-		botoes[1] = botaoDireita;
-		botoes[2] = botaoEsquerda;
-		botoes[3] = botaoUnlock;
-		botoes[4] = botaoLock;
-		n_botoes_na_tela = 5;
 	}
 	else if(laundry_event == 1){
 		draw_heavy_page();
 		botoes[0] = botaoLavagemRapida;
-		botoes[1] = botaoDireita;
-		botoes[2] = botaoEsquerda;
-		botoes[3] = botaoUnlock;
-		botoes[4] = botaoLock;
-		n_botoes_na_tela = 5;
 	}
 	else if(laundry_event == 2){
 		draw_fast_page();
 		botoes[0] = botaoLavagemDiaria;
-		botoes[1] = botaoDireita;
-		botoes[2] = botaoEsquerda;
-		botoes[3] = botaoUnlock;
-		botoes[4] = botaoLock;
-		n_botoes_na_tela = 5;
 	}
-
+	botoes[1] = botaoDireita;
+	botoes[2] = botaoEsquerda;
+	n_botoes_na_tela = 3;
 }
 
 void play_pause_callback(void){
@@ -137,13 +126,20 @@ void play_pause_callback(void){
 	
 	if(laundry_event == 0){
 		//Diario
+		time_left = calculate_total_time(c_diario);
 	}
 	else if(laundry_event == 1){
 		//Pesado
+		time_left = calculate_total_time(c_pesado);
 	}
 	else if(laundry_event == 2){
 		//Rapido
+		time_left = calculate_total_time(c_rapido);
 	}
+	
+	draw_working(time_left);
+	
+	rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
 }
 
 void lavagem_callback(void){
@@ -157,78 +153,50 @@ void lavagem_callback(void){
 }
 
 void slice_right_callback(void){
-	if (unlocked_flag){
-		draw_screen();
-		
-		if(laundry_event == 0){
-			laundry_event = 1;
-			draw_heavy_page();
-			botoes[0] = botaoLavagemPesada;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-		}
-		else if(laundry_event == 1){
-			laundry_event = 2;
-			draw_fast_page();
-			botoes[0] = botaoLavagemRapida;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-			
-		}
-		else if(laundry_event == 2){
-			laundry_event = 0;
-			draw_diary_page();
-			botoes[0] = botaoLavagemDiaria;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-		}	
+	draw_screen();
+	
+	if(laundry_event == 0){
+		laundry_event = 1;
+		draw_heavy_page();
+		botoes[0] = botaoLavagemPesada;
 	}
+	else if(laundry_event == 1){
+		laundry_event = 2;
+		draw_fast_page();
+		botoes[0] = botaoLavagemRapida;
+	}
+	else if(laundry_event == 2){
+		laundry_event = 0;
+		draw_diary_page();
+		botoes[0] = botaoLavagemDiaria;
+	}
+	botoes[1] = botaoDireita;
+	botoes[2] = botaoEsquerda;
+	n_botoes_na_tela = 3;
+	
 }
 
 void slice_left_callback(void){
-	if (unlocked_flag){
-		draw_screen();
-		
-		if(laundry_event == 0){
-			laundry_event = 2;
-			draw_fast_page();
-			botoes[0] = botaoLavagemRapida;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-		}
-		else if(laundry_event == 1){
-			laundry_event = 0;
-			draw_diary_page();
-			botoes[0] = botaoLavagemDiaria;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-		}
-		else if(laundry_event == 2){
-			laundry_event = 1;
-			draw_heavy_page();
-			botoes[0] = botaoLavagemPesada;
-			botoes[1] = botaoDireita;
-			botoes[2] = botaoEsquerda;
-			botoes[3] = botaoUnlock;
-			botoes[4] = botaoLock;
-			n_botoes_na_tela = 5;
-		}
+	draw_screen();
+	
+	if(laundry_event == 0){
+		laundry_event = 2;
+		draw_fast_page();
+		botoes[0] = botaoLavagemRapida;
 	}
+	else if(laundry_event == 1){
+		laundry_event = 0;
+		draw_diary_page();
+		botoes[0] = botaoLavagemDiaria;
+	}
+	else if(laundry_event == 2){
+		laundry_event = 1;
+		draw_heavy_page();
+		botoes[0] = botaoLavagemPesada;
+	}
+	botoes[1] = botaoDireita;
+	botoes[2] = botaoEsquerda;
+	n_botoes_na_tela = 3;
 }
 
 void unlock_callback(void){
@@ -540,6 +508,13 @@ void build_buttons(){
 	botaoPlayPause.size_y = 100;
 	botaoPlayPause.p_handler = play_pause_callback;
 	botaoPlayPause.image = &play_pause;
+		
+	botaoOk.x = 175;
+	botaoOk.y = 105;
+	botaoOk.size_x = 100;
+	botaoOk.size_y = 100;
+	botaoOk.p_handler = home_callback;
+	botaoOk.image = &OK;
 }
 
 void draw_laundry_menu(){
@@ -583,12 +558,6 @@ void draw_diary_page(){
 	botaoEsquerda.image->width,
 	botaoEsquerda.image->height,
 	botaoEsquerda.image->data);
-	
-	ili9488_draw_pixmap(botaoUnlock.x,
-	botaoUnlock.y,
-	botaoUnlock.image->width,
-	botaoUnlock.image->height,
-	botaoUnlock.image->data);
 	
 	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
 	ili9488_draw_string(botaoLavagemDiaria.x + 5,
@@ -646,6 +615,113 @@ void draw_heavy_page(){
 						"LAVAGEM PESADA" );
 }
 
+void RTC_Handler(void)
+{
+	uint32_t ul_status = rtc_get_status(RTC);
+
+	/*
+	*  Verifica por qual motivo entrou
+	*  na interrupcao, se foi por segundo
+	*  ou Alarm
+	*/
+	if ((ul_status & RTC_SR_SEC) == RTC_SR_SEC) {
+		rtc_clear_status(RTC, RTC_SCCR_SECCLR);
+		print_time_value = true;
+	}
+	
+	/* Time or date alarm */
+	if ((ul_status & RTC_SR_ALARM) == RTC_SR_ALARM) {
+		rtc_clear_status(RTC, RTC_SCCR_ALRCLR);
+	}
+	
+	rtc_clear_status(RTC, RTC_SCCR_ACKCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TIMCLR);
+	rtc_clear_status(RTC, RTC_SCCR_CALCLR);
+	rtc_clear_status(RTC, RTC_SCCR_TDERRCLR);	
+}
+
+void RTC_init(){
+	/* Configura o PMC */
+	pmc_enable_periph_clk(ID_RTC);
+
+	/* Default RTC configuration, 24-hour mode */
+	rtc_set_hour_mode(RTC, 0);
+
+	/* Configura data e hora manualmente */
+	rtc_set_date(RTC, YEAR, MOUNTH, DAY, WEEK);
+	rtc_set_time(RTC, HOUR, MINUTE, SECONDS);
+
+	/* Configure RTC interrupts */
+	NVIC_DisableIRQ(RTC_IRQn);
+	NVIC_ClearPendingIRQ(RTC_IRQn);
+	NVIC_SetPriority(RTC_IRQn, 0);
+	NVIC_EnableIRQ(RTC_IRQn);
+}
+
+int calculate_total_time(t_ciclo act_cicle){
+	int total = act_cicle.centrifugacaoTempo + 
+				(act_cicle.enxagueQnt * act_cicle.enxagueTempo);
+	return total;
+}
+
+void font_draw_text(tFont *font, const char *text, int x, int y, int spacing) {
+	char *p = text;
+	while(*p != NULL) {
+		char letter = *p;
+		int letter_offset = letter - font->start_char;
+		if(letter <= font->end_char) {
+			tChar *current_char = font->chars + letter_offset;
+			ili9488_draw_pixmap(x, y, current_char->image->width, current_char->image->height, current_char->image->data);
+			x += current_char->image->width + spacing;
+		}
+		p++;
+	}
+}
+
+void draw_done_laundry(){
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+	draw_screen();
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(135, 75, "LAVAGEM CONCLUIDA" );
+	
+	ili9488_draw_pixmap(botaoOk.x,
+	botaoOk.y,
+	botaoOk.image->width,
+	botaoOk.image->height,
+	botaoOk.image->data);
+	
+	botoes[0] = botaoOk;
+	n_botoes_na_tela = 1;
+}
+
+void draw_working(int time_left){
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+	draw_screen();
+	
+	char total_left[32];
+	
+	sprintf(total_left,"%02d",time_left);
+	font_draw_text(&calibri_36, total_left, 150, 75, 1);
+	
+	ili9488_draw_pixmap(botaoUnlock.x,
+	botaoUnlock.y,
+	botaoUnlock.image->width,
+	botaoUnlock.image->height,
+	botaoUnlock.image->data);
+}
+
+void print_time(void){	
+	time_left--;
+	
+	if(time_left>0){	
+		draw_working(time_left);
+	}
+	else{
+		rtc_disable_interrupt(RTC,RTC_IER_SECEN);
+		draw_done_laundry();
+	}
+}
 
 int main(void)
 {
@@ -672,6 +748,8 @@ int main(void)
 
 	printf("\n\rmaXTouch data USART transmitter\n\r");
 	
+	RTC_init();
+	
 	build_buttons();
 	build_laundry_types();
 	draw_diary_page();
@@ -679,17 +757,21 @@ int main(void)
 	botoes[0] = botaoLavagemDiaria;
 	botoes[1] = botaoDireita;
 	botoes[2] = botaoEsquerda;
-	botoes[3] = botaoUnlock;
-	botoes[4] = botaoLock;
 	
-	n_botoes_na_tela = 5;
+	n_botoes_na_tela = 3;
+	print_time_value = false;
 		
 	while (true) {
 		/* Check for any pending messages and run message handler if any
 		 * message is found in the queue */
 		if (mxt_is_message_pending(&device)) {
 			mxt_handler(&device, botoes, n_botoes_na_tela);
-		}	
+		}
+		
+		if (print_time_value){
+			print_time();
+			print_time_value = false;
+		}
 	}
 
 	return 0;

@@ -11,3 +11,11 @@
 #define USART_TX_MAX_LENGTH     0xff
 
 struct ili9488_opt_t g_ili9488_display_opt;
+
+#define YEAR        0
+#define MOUNTH      0
+#define DAY         0
+#define WEEK        0
+#define HOUR        0
+#define MINUTE      0
+#define SECONDS     0

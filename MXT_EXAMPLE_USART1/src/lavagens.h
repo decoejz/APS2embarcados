@@ -16,3 +16,5 @@ struct ciclo{
 t_ciclo c_rapido;
 t_ciclo c_diario;
 t_ciclo c_pesado;
+
+int calculate_total_time(t_ciclo act_cicle);
