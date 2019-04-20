@@ -9,8 +9,12 @@ Todas as imagens foram retiradas do site www.flaticon.com
 
 ### Explicações
 
-Uma foto da tela inicial da máquina pode ser encontrada no link: LINK_FOTO
+Uma foto da tela inicial da máquina pode ser encontrada no link: https://github.com/decoejz/APS2embarcados/blob/master/tela.jpg
 
 Um vídeo do projeto funcionando pode ser encontrado em: LINK_VIDEO
 
 O tempo esta sendo contado em segundo apenas para facilitar a visualização dos testes e implementação do protótipo. Apesar disso, o tempo corrido pode ser considerado como sendo em minutos.
+
+
+André Ejzenmesser
+Rafael Vieira Rosenzvaig
