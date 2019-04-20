@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-
+SHELL := cmd.exe
 RM := rm -rf
 
 USER_OBJS :=
@@ -100,6 +100,7 @@ SUBDIRS :=  \
 ../src/ASF/thirdparty/CMSIS/Lib/ \
 ../src/ASF/thirdparty/CMSIS/Lib/GCC/ \
 ../src/config/ \
+../src/fontes/ \
 ../src/icones/
 
 

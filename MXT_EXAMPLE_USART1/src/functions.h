@@ -24,3 +24,4 @@ void print_time(void);
 void font_draw_text(tFont *font, const char *text, int x, int y, int spacing);
 void draw_done_laundry();
 void draw_working(int time_left);
+void do_unlock(void);

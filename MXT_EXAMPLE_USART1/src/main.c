@@ -101,6 +101,7 @@ struct botao botoes[10];
 
 volatile bool unlocked_flag = true;
 volatile bool door_open;
+volatile bool lock_unlock;
 
 
 void door_callback(){
@@ -172,6 +173,7 @@ void lavagem_callback(void){
 		n_botoes_na_tela = 4;
 	}
 }
+
 void slice_right_callback(void){
 	
 	if(unlocked_flag){
@@ -240,27 +242,15 @@ void unlock_callback(void){
 							botaoLock.image->height,
 							botaoLock.image->data);
 		unlocked_flag = false;
+		pio_enable_interrupt(UNLOCK_PIO, UNLOCK_PIO_IDX_MASK);
 		return;
 	}
 }
 
 void lock_callback(void){
-	if(unlocked_flag == false){
-		//deixa lugar do botao branco
-		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
-		ili9488_draw_filled_rectangle(botaoUnlock.x, botaoUnlock.y, botaoUnlock.x + botaoUnlock.image->width, botaoUnlock.y + botaoUnlock.image->height);
-		ili9488_draw_filled_rectangle(botaoLock.x, botaoLock.y, botaoLock.x + botaoLock.image->width, botaoLock.y + botaoLock.image->height);
-
-		
-		ili9488_draw_pixmap(botaoUnlock.x,
-							botaoUnlock.y,
-							botaoUnlock.image->width,
-							botaoUnlock.image->height,
-							botaoUnlock.image->data);
-		unlocked_flag = true;
-		return;
-	}				  
-
+	if (time_left <= 0){
+		lock_unlock = true;
+	}
 }
 
 int processa_touch(struct botao *b, struct botao *rtn, uint N ,uint x, uint y ){
@@ -520,7 +510,6 @@ void build_buttons(){
 	botaoLock.y = 240;
 	botaoLock.size_x = 70;
 	botaoLock.size_y = 70;
-	botaoLock.p_handler = lock_callback;
 	botaoLock.image = &lock;
 	
 	botaoHome.x = 20;
@@ -567,7 +556,7 @@ void draw_laundry_menu(){
 	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
 	ili9488_draw_string(botaoHome.x + 25,
 						botaoHome.y + botaoHome.image->height + 10,
-						"MENU" );
+						"HOME" );
 	
 	ili9488_draw_string(botaoPlayPause.x + 5,
 	botaoPlayPause.y + botaoPlayPause.image->height + 10,
@@ -578,6 +567,25 @@ void draw_laundry_menu(){
 	botaoUnlock.image->width,
 	botaoUnlock.image->height,
 	botaoUnlock.image->data);
+	
+	if (laundry_event == 0){
+		time_left = calculate_total_time(c_diario);
+	}
+	else if (laundry_event == 1){
+		time_left = calculate_total_time(c_pesado);
+	}
+	else if (laundry_event == 2){
+		time_left = calculate_total_time(c_rapido);
+	}
+	
+	char total_left[32];
+	
+	sprintf(total_left,"%02d",time_left);
+	font_draw_text(&calibri_36, total_left, 180, 150, 1);
+	
+	ili9488_draw_string(225, 160, "MINUTOS" );
+	
+	time_left = 0;
 }
 
 void draw_diary_page(){
@@ -761,7 +769,10 @@ void draw_working(int time_left){
 	char total_left[32];
 	
 	sprintf(total_left,"%02d",time_left);
-	font_draw_text(&calibri_36, total_left, 150, 75, 1);
+	font_draw_text(&arial_72, total_left, 120, 90, 1);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(210, 140, "MINUTOS RESTANTES" );
 	
 }
 
@@ -792,6 +803,14 @@ void draw_locked_door(){
 	imageNop.image->width,
 	imageNop.image->height,
 	imageNop.image->data);
+	
+	ili9488_set_foreground_color(COLOR_CONVERT(COLOR_BLACK));
+	ili9488_draw_string(imageNop.x + 20, 
+						imageNop.y + imageNop.image->width + 10,
+						"PORTA TRANCADA" );
+	
+	delay_ms(1000);
+	time_left -= 1;
 }
 
 void print_time(void){	
@@ -814,15 +833,39 @@ void init_led(void){
 
 void init_but(void){
 	pmc_enable_periph_clk(DOOR_PIO_ID);
-	
 	pio_set_input(DOOR_PIO, DOOR_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	
 	pio_enable_interrupt(DOOR_PIO, DOOR_PIO_IDX_MASK);
 	pio_handler_set(DOOR_PIO, DOOR_PIO_ID, DOOR_PIO_IDX_MASK, PIO_IT_FALL_EDGE, door_callback);
 	NVIC_EnableIRQ(DOOR_PIO_ID);
-	NVIC_SetPriority(DOOR_PIO_ID, 1);
+	NVIC_SetPriority(DOOR_PIO_ID, 3);
+	
+	pmc_enable_periph_clk(UNLOCK_PIO_ID);
+	pio_set_input(UNLOCK_PIO, UNLOCK_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	
+	pio_handler_set(UNLOCK_PIO, UNLOCK_PIO_ID, UNLOCK_PIO_IDX_MASK, PIO_IT_FALL_EDGE, lock_callback);
+	NVIC_EnableIRQ(UNLOCK_PIO_ID);
+	NVIC_SetPriority(UNLOCK_PIO_ID, 3);
 }
 
+void do_unlock(void){
+	if(unlocked_flag == false){
+		//deixa lugar do botao branco
+		ili9488_set_foreground_color(COLOR_CONVERT(COLOR_WHITE));
+		ili9488_draw_filled_rectangle(botaoUnlock.x, botaoUnlock.y, botaoUnlock.x + botaoUnlock.image->width, botaoUnlock.y + botaoUnlock.image->height);
+		ili9488_draw_filled_rectangle(botaoLock.x, botaoLock.y, botaoLock.x + botaoLock.image->width, botaoLock.y + botaoLock.image->height);
+
+		
+		ili9488_draw_pixmap(botaoUnlock.x,
+		botaoUnlock.y,
+		botaoUnlock.image->width,
+		botaoUnlock.image->height,
+		botaoUnlock.image->data);
+		unlocked_flag = true;
+		pio_disable_interrupt(UNLOCK_PIO, UNLOCK_PIO_IDX_MASK);
+		return;
+	}
+}
 
 int main(void)
 {
@@ -865,7 +908,8 @@ int main(void)
 	
 	n_botoes_na_tela = 5;
 	print_time_value = false;
-	door_open = true;
+	door_open = false;
+	lock_unlock = false;
 		
 	while (true) {
 		/* Check for any pending messages and run message handler if any
@@ -890,6 +934,11 @@ int main(void)
 		}
 		else{
 			pio_clear(LED1_PIO,LED1_PIO_IDX_MASK);
+		}
+		
+		if (lock_unlock){
+			do_unlock();
+			lock_unlock = false;
 		}
 	}
 
