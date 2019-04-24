@@ -15,7 +15,7 @@ Um vídeo do projeto funcionando pode ser encontrado em: https://youtu.be/lttsTH
 
 O tempo esta sendo contado em segundo apenas para facilitar a visualização dos testes e implementação do protótipo. Apesar disso, o tempo corrido pode ser considerado como sendo em minutos.
 
-
+----
 André Ejzenmesser
 
 Rafael Vieira Rosenzvaig
