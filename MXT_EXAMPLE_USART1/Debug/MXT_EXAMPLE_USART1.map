@@ -9679,7 +9679,7 @@ OUTPUT(MXT_EXAMPLE_USART1.elf elf32-littlearm)
  .comment       0x00000059       0x5a src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .comment       0x00000059       0x5a src/main.o
 
-.debug_info     0x00000000    0x2227c
+.debug_info     0x00000000    0x2226c
  .debug_info    0x00000000     0x240d src/ASF/common/components/touch/mxt/mxt_device_1.o
  .debug_info    0x0000240d     0x12a4 src/ASF/common/services/clock/same70/sysclk.o
  .debug_info    0x000036b1      0xa45 src/ASF/common/services/delay/sam/cycle_counter.o
@@ -9701,7 +9701,7 @@ OUTPUT(MXT_EXAMPLE_USART1.elf elf32-littlearm)
  .debug_info    0x00019f27     0x1600 src/ASF/sam/utils/cmsis/same70/source/templates/gcc/startup_same70.o
  .debug_info    0x0001b527      0x5d0 src/ASF/sam/utils/cmsis/same70/source/templates/system_same70.o
  .debug_info    0x0001baf7      0xdb0 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_info    0x0001c8a7     0x59d5 src/main.o
+ .debug_info    0x0001c8a7     0x59c5 src/main.o
 
 .debug_abbrev   0x00000000     0x4413
  .debug_abbrev  0x00000000      0x44d src/ASF/common/components/touch/mxt/mxt_device_1.o
@@ -10062,7 +10062,7 @@ OUTPUT(MXT_EXAMPLE_USART1.elf elf32-littlearm)
  .debug_line    0x0000f692      0x40b src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .debug_line    0x0000fa9d     0x164a src/main.o
 
-.debug_str      0x00000000    0x96a4e
+.debug_str      0x00000000    0x96a03
  .debug_str     0x00000000    0x8d1f8 src/ASF/common/components/touch/mxt/mxt_device_1.o
                               0x8da15 (size before relaxing)
  .debug_str     0x0008d1f8      0x4c3 src/ASF/common/services/clock/same70/sysclk.o
@@ -10105,8 +10105,8 @@ OUTPUT(MXT_EXAMPLE_USART1.elf elf32-littlearm)
                               0x78486 (size before relaxing)
  .debug_str     0x00093996      0x768 src/ASF/sam/utils/syscalls/gcc/syscalls.o
                                0x746b (size before relaxing)
- .debug_str     0x000940fe     0x2950 src/main.o
-                              0x93260 (size before relaxing)
+ .debug_str     0x000940fe     0x2905 src/main.o
+                              0x9326a (size before relaxing)
 
 .debug_frame    0x00000000     0x3870
  .debug_frame   0x00000000      0x1d4 src/ASF/common/components/touch/mxt/mxt_device_1.o

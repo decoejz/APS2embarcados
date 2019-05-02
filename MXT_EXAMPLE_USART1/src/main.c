@@ -87,7 +87,7 @@
 #include "main.h"
 
 volatile int n_botoes_na_tela = 0;
-volatile Bool print_time_value;
+volatile uint8_t print_time_value;
 volatile int time_left = 0;
 
 /*
@@ -693,7 +693,7 @@ void RTC_Handler(void)
 	*/
 	if ((ul_status & RTC_SR_SEC) == RTC_SR_SEC) {
 		rtc_clear_status(RTC, RTC_SCCR_SECCLR);
-		print_time_value = true;
+		print_time_value = 1u;
 	}
 	
 	/* Time or date alarm */
@@ -907,7 +907,7 @@ int main(void)
 	botoes[4] = botaoLock;
 	
 	n_botoes_na_tela = 5;
-	print_time_value = false;
+	print_time_value = 0u;
 	door_open = false;
 	lock_unlock = false;
 		
@@ -920,7 +920,7 @@ int main(void)
 		
 		if (print_time_value){
 			print_time();
-			print_time_value = false;
+			print_time_value = 0u;
 		}
 		
 		if(door_open){
