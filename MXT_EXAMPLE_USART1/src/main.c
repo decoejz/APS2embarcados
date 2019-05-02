@@ -111,18 +111,21 @@ void door_callback(){
 void home_callback(void){
 	if(unlocked_flag){
 		draw_screen();
-		
-		if(laundry_event == 0){
-			draw_diary_page();
-			botoes[0] = botaoLavagemPesada;
-		}
-		else if(laundry_event == 1){
-			draw_heavy_page();
-			botoes[0] = botaoLavagemRapida;
-		}
-		else if(laundry_event == 2){
-			draw_fast_page();
-			botoes[0] = botaoLavagemDiaria;
+		switch(laundry_event){
+			case 0:
+				draw_diary_page();
+				botoes[0] = botaoLavagemPesada;
+				break;
+			
+			case 1:
+				draw_heavy_page();
+				botoes[0] = botaoLavagemRapida;
+				break;
+				
+			case 2:
+				draw_fast_page();
+				botoes[0] = botaoLavagemDiaria;
+				break;
 		}
 		botoes[1] = botaoDireita;
 		botoes[2] = botaoEsquerda;
@@ -137,17 +140,19 @@ void play_pause_callback(void){
 		draw_screen();
 	
 		if(!door_open){
-			if(laundry_event == 0){
-				//Diario
-				time_left = calculate_total_time(c_diario);
-			}
-			else if(laundry_event == 1){
-				//Pesado
-				time_left = calculate_total_time(c_pesado);
-			}
-			else if(laundry_event == 2){
-				//Rapido
-				time_left = calculate_total_time(c_rapido);
+			
+			switch(laundry_event){
+				case 0:
+					time_left = calculate_total_time(c_diario);
+					break;
+				
+				case 1:
+					time_left = calculate_total_time(c_pesado);
+					break;
+				
+				case 2:
+					time_left = calculate_total_time(c_rapido);
+					break;
 			}
 	
 			draw_working(time_left);
@@ -178,20 +183,24 @@ void slice_right_callback(void){
 	
 	if(unlocked_flag){
 		draw_screen();
-		if(laundry_event == 0){
-			laundry_event = 1;
-			draw_heavy_page();
-			botoes[0] = botaoLavagemPesada;
-		}
-		else if(laundry_event == 1){
-			laundry_event = 2;
-			draw_fast_page();
-			botoes[0] = botaoLavagemRapida;
-		}
-		else if(laundry_event == 2){
-			laundry_event = 0;
-			draw_diary_page();
-			botoes[0] = botaoLavagemDiaria;
+		switch(laundry_event){
+			case 0:
+				laundry_event = 1;
+				draw_heavy_page();
+				botoes[0] = botaoLavagemPesada;
+				break;
+			
+			case 1:
+				laundry_event = 2;
+				draw_fast_page();
+				botoes[0] = botaoLavagemRapida;
+				break;
+			
+			case 2:
+				laundry_event = 0;
+				draw_diary_page();
+				botoes[0] = botaoLavagemDiaria;
+				break;
 		}
 		botoes[1] = botaoDireita;
 		botoes[2] = botaoEsquerda;
@@ -205,21 +214,26 @@ void slice_left_callback(void){
 	
 	if(unlocked_flag){
 		draw_screen();
-		if(laundry_event == 0){
-			laundry_event = 2;
-			draw_fast_page();
-			botoes[0] = botaoLavagemRapida;
+		switch(laundry_event){
+			case 0:
+				laundry_event = 2;
+				draw_fast_page();
+				botoes[0] = botaoLavagemRapida;
+				break;
+			
+			case 1:
+				laundry_event = 0;
+				draw_diary_page();
+				botoes[0] = botaoLavagemDiaria;
+				break;
+			
+			case 2:
+				laundry_event = 1;
+				draw_heavy_page();
+				botoes[0] = botaoLavagemPesada;
+				break;
 		}
-		else if(laundry_event == 1){
-			laundry_event = 0;
-			draw_diary_page();
-			botoes[0] = botaoLavagemDiaria;
-		}
-		else if(laundry_event == 2){
-			laundry_event = 1;
-			draw_heavy_page();
-			botoes[0] = botaoLavagemPesada;
-		}
+
 		botoes[1] = botaoDireita;
 		botoes[2] = botaoEsquerda;
 		botoes[3] = botaoUnlock;
@@ -568,15 +582,20 @@ void draw_laundry_menu(){
 	botaoUnlock.image->height,
 	botaoUnlock.image->data);
 	
-	if (laundry_event == 0){
-		time_left = calculate_total_time(c_diario);
+	switch(laundry_event){
+		case 0:
+			time_left = calculate_total_time(c_diario);
+			break;
+		
+		case 1:
+			time_left = calculate_total_time(c_pesado);
+			break;
+		
+		case 2:
+			time_left = calculate_total_time(c_rapido);
+			break;
 	}
-	else if (laundry_event == 1){
-		time_left = calculate_total_time(c_pesado);
-	}
-	else if (laundry_event == 2){
-		time_left = calculate_total_time(c_rapido);
-	}
+	
 	
 	char total_left[32];
 	
