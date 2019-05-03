@@ -716,11 +716,6 @@ void RTC_Handler(void)
 		print_time_value = 1u;
 	}
 	
-	/* Time or date alarm */
-	if ((ul_status & RTC_SR_ALARM) == RTC_SR_ALARM) {
-		rtc_clear_status(RTC, RTC_SCCR_ALRCLR);
-	}
-	
 	rtc_clear_status(RTC, RTC_SCCR_ACKCLR);
 	rtc_clear_status(RTC, RTC_SCCR_TIMCLR);
 	rtc_clear_status(RTC, RTC_SCCR_CALCLR);
