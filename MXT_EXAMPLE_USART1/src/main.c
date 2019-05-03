@@ -154,7 +154,8 @@ void play_pause_callback(void){
 					time_left = calculate_total_time(c_rapido);
 					break;
 			}
-	
+			n_botoes_na_tela = 0;
+			
 			draw_working(time_left);
 	
 			rtc_enable_interrupt(RTC,  RTC_IER_SECEN);
